@@ -93,10 +93,10 @@ function getExtensionUrlSafe(path) {
 }
 
 function isRecoverableRuntimeMessage(message) {
-  const msg = String(message || "");
+  const msg = String(message || "").toLowerCase();
   return (
-    msg.includes("Could not establish connection. Receiving end does not exist.") ||
-    msg.includes("The message port closed before a response was received")
+    msg.includes("could not establish connection. receiving end does not exist.") ||
+    msg.includes("the message port closed before a response was received")
   );
 }
 
@@ -125,12 +125,6 @@ function sendMessageSafe(message, callback, attempt = 0) {
         const lastError = chrome?.runtime?.lastError;
         if (lastError) {
           const msg = String(lastError.message || "");
-          if (msg.includes("message port closed before a response was received")) {
-            if (typeof callback === "function") {
-              callback(null, response);
-            }
-            return;
-          }
           if (isRecoverableRuntimeMessage(msg) && attempt < SEND_MESSAGE_MAX_RETRIES) {
             setTimeout(() => {
               sendMessageSafe(message, callback, attempt + 1);
