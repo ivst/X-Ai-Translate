@@ -498,6 +498,17 @@ function saveLastTranslation(text, isError) {
   chrome.storage.local.set(payload);
 }
 
+function showTranslatingState(tabId, requestId) {
+  if (!tabId) return;
+  sendToTab(tabId, {
+    action: "streamUpdate",
+    requestId,
+    target: "overlay",
+    text: "Translating...",
+    done: false
+  });
+}
+
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId !== "ai-translate-selection" || !info.selectionText) {
     return;
@@ -508,6 +519,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   }
   try {
     const requestId = `ctx-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    showTranslatingState(tab?.id, requestId);
     await streamTranslate(info.selectionText, (text, done) => {
       sendToTab(tab?.id, {
         action: "streamUpdate",
@@ -624,6 +636,7 @@ chrome.commands.onCommand.addListener((command) => {
         }
 
         const requestId = `hotkey-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        showTranslatingState(tab.id, requestId);
         streamTranslate(selectedText, (text, done) => {
           sendToTab(tab.id, {
             action: "streamUpdate",

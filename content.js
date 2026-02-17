@@ -15,6 +15,7 @@ const INLINE_TRANSLATION_TEXT_SELECTOR = `${TWEET_TEXT_SELECTOR}, ${YOUTUBE_COMM
 const TRANSLATE_BTN_CLASS = "ai-translate-btn";
 const TRANSLATE_RESULT_CLASS = "ai-translate-result";
 const TRANSLATE_LOADING_CLASS = "ai-translate-loading";
+const SELECTION_STREAM_TIMEOUT_MS = 45000;
 const DEFAULT_CONFIG = {
   targetLang: "en",
   uiLang: "en",
@@ -39,11 +40,16 @@ let selectionTimer = null;
 let isMouseSelecting = false;
 let streamSeq = 0;
 const inlineStreams = new Map();
+const INLINE_STREAM_TIMEOUT_MS = 45000;
 let activeSelectionRequestId = null;
+let activeSelectionTimeoutId = null;
 let overlayEl = null;
 let overlayContentEl = null;
 let overlayActionsEl = null;
 let overlayTimer = null;
+let overlayLoadingTimer = null;
+let overlayLoadingRequestId = null;
+let overlayLoadingFrame = 0;
 let extensionContextLost = false;
 
 function isContextInvalidationError(err) {
@@ -86,15 +92,80 @@ function getExtensionUrlSafe(path) {
 
 function sendMessageSafe(message, callback) {
   const runtime = getRuntimeSafe();
-  if (!runtime || !runtime.id) return;
+  if (!runtime || !runtime.id) {
+    if (typeof callback === "function") {
+      callback(new Error("Extension context unavailable"));
+    }
+    return false;
+  }
   try {
-    runtime.sendMessage(message, callback || (() => {}));
+    runtime.sendMessage(message, (response) => {
+      try {
+        const lastError = chrome?.runtime?.lastError;
+        if (lastError) {
+          const msg = String(lastError.message || "");
+          if (msg.includes("message port closed before a response was received")) {
+            if (typeof callback === "function") {
+              callback(null, response);
+            }
+            return;
+          }
+          if (typeof callback === "function") {
+            callback(new Error(msg || "Failed to send message"));
+          }
+          return;
+        }
+      } catch (err) {
+        if (typeof callback === "function") {
+          callback(err instanceof Error ? err : new Error(String(err)));
+        }
+        return;
+      }
+      if (typeof callback === "function") {
+        callback(null, response);
+      }
+    });
+    return true;
   } catch (err) {
     if (isContextInvalidationError(err)) {
       extensionContextLost = true;
-      return;
+      if (typeof callback === "function") {
+        callback(new Error("Extension context invalidated"));
+      }
+      return false;
     }
+    if (typeof callback === "function") {
+      callback(err instanceof Error ? err : new Error(String(err)));
+    }
+    return false;
   }
+}
+
+function clearInlineStreamState(requestId) {
+  const entry = inlineStreams.get(requestId);
+  if (!entry) return;
+  if (entry.timeoutId) {
+    clearTimeout(entry.timeoutId);
+  }
+  inlineStreams.delete(requestId);
+}
+
+function armInlineStreamTimeout(requestId) {
+  const entry = inlineStreams.get(requestId);
+  if (!entry) return;
+  if (entry.timeoutId) {
+    clearTimeout(entry.timeoutId);
+  }
+  entry.timeoutId = setTimeout(() => {
+    const current = inlineStreams.get(requestId);
+    if (!current) return;
+    const { result, btn, strings } = current;
+    btn.classList.remove(TRANSLATE_LOADING_CLASS);
+    btn.textContent = strings.buttonIdle;
+    result.textContent = `${strings.errorPrefix}: timeout`;
+    result.style.display = "block";
+    inlineStreams.delete(requestId);
+  }, INLINE_STREAM_TIMEOUT_MS);
 }
 
 function ensureSelectionButton() {
@@ -120,14 +191,25 @@ function ensureSelectionButton() {
     const text = lastSelectionText.trim();
     if (!text) return;
     btn.classList.add(TRANSLATE_LOADING_CLASS);
+    const strings = getLocaleStrings(currentConfig.uiLang || currentConfig.targetLang);
+    showGlobalOverlay(strings.buttonLoading, false);
     const requestId = `selection-${Date.now()}-${streamSeq++}`;
     activeSelectionRequestId = requestId;
-    sendMessageSafe({
+    armSelectionTimeout(requestId, strings);
+    const sent = sendMessageSafe({
       action: "translateStream",
       requestId,
       target: "overlay",
       text
+    }, (err) => {
+      if (!err || activeSelectionRequestId !== requestId) return;
+      clearSelectionStreamState();
+      showGlobalOverlay(`${strings.errorPrefix}: ${err.message || String(err)}`, true);
     });
+    if (!sent && activeSelectionRequestId === requestId) {
+      clearSelectionStreamState();
+      showGlobalOverlay(`${strings.errorPrefix}: extension context unavailable`, true);
+    }
   });
   document.body.appendChild(btn);
   selectionButton = btn;
@@ -138,6 +220,28 @@ function hideSelectionButton() {
   if (selectionButton) {
     selectionButton.style.display = "none";
   }
+}
+
+function clearSelectionStreamState() {
+  if (activeSelectionTimeoutId) {
+    clearTimeout(activeSelectionTimeoutId);
+    activeSelectionTimeoutId = null;
+  }
+  if (selectionButton) {
+    selectionButton.classList.remove(TRANSLATE_LOADING_CLASS);
+  }
+  activeSelectionRequestId = null;
+}
+
+function armSelectionTimeout(requestId, strings) {
+  if (activeSelectionTimeoutId) {
+    clearTimeout(activeSelectionTimeoutId);
+  }
+  activeSelectionTimeoutId = setTimeout(() => {
+    if (activeSelectionRequestId !== requestId) return;
+    clearSelectionStreamState();
+    showGlobalOverlay(`${strings.errorPrefix}: timeout`, true);
+  }, SELECTION_STREAM_TIMEOUT_MS);
 }
 
 function positionSelectionButton(rect) {
@@ -331,13 +435,33 @@ function enhanceInlineText(el) {
     result.textContent = "";
 
     const requestId = `inline-${Date.now()}-${streamSeq++}`;
-    inlineStreams.set(requestId, { result, btn, strings });
-    sendMessageSafe({
+    inlineStreams.set(requestId, { result, btn, strings, timeoutId: null });
+    armInlineStreamTimeout(requestId);
+    const sent = sendMessageSafe({
       action: "translateStream",
       requestId,
       target: "inline",
       text: textToTranslate
+    }, (err) => {
+      if (!err) return;
+      const entry = inlineStreams.get(requestId);
+      if (!entry) return;
+      const { result: currentResult, btn: currentBtn, strings: currentStrings } = entry;
+      currentBtn.classList.remove(TRANSLATE_LOADING_CLASS);
+      currentBtn.textContent = currentStrings.buttonIdle;
+      currentResult.textContent = `${currentStrings.errorPrefix}: ${err.message || String(err)}`;
+      currentResult.style.display = "block";
+      clearInlineStreamState(requestId);
     });
+    if (!sent) {
+      const entry = inlineStreams.get(requestId);
+      if (!entry) return;
+      btn.classList.remove(TRANSLATE_LOADING_CLASS);
+      btn.textContent = strings.buttonIdle;
+      result.textContent = `${strings.errorPrefix}: extension context unavailable`;
+      result.style.display = "block";
+      clearInlineStreamState(requestId);
+    }
   });
 
   container.appendChild(btn);
@@ -389,6 +513,48 @@ function ensureOverlay() {
   overlayActionsEl.appendChild(closeBtn);
 }
 
+function applyOverlayMode(mode) {
+  ensureOverlay();
+  const resolvedMode = mode === "center" ? "center" : "toast";
+  if (resolvedMode === "center") {
+    overlayEl.classList.add("centered");
+    if (!overlayActionsEl?.parentElement) {
+      overlayEl.appendChild(overlayActionsEl);
+    }
+  } else {
+    overlayEl.classList.remove("centered");
+    if (overlayActionsEl?.parentElement === overlayEl) {
+      overlayEl.removeChild(overlayActionsEl);
+    }
+  }
+}
+
+function stopOverlayLoadingAnimation() {
+  if (overlayLoadingTimer) {
+    clearInterval(overlayLoadingTimer);
+    overlayLoadingTimer = null;
+  }
+  overlayLoadingRequestId = null;
+  overlayLoadingFrame = 0;
+}
+
+function startOverlayLoadingAnimation(requestId) {
+  stopOverlayLoadingAnimation();
+  overlayLoadingRequestId = requestId || null;
+  overlayLoadingFrame = 0;
+  const frames = [".", "..", "...", ".."];
+  ensureOverlay();
+  overlayEl.className = "ai-translate-overlay";
+  applyOverlayMode(currentConfig.overlayMode || "toast");
+  overlayEl.classList.add("visible");
+  overlayContentEl.textContent = frames[0];
+  overlayLoadingTimer = setInterval(() => {
+    overlayLoadingFrame = (overlayLoadingFrame + 1) % frames.length;
+    if (!overlayContentEl) return;
+    overlayContentEl.textContent = frames[overlayLoadingFrame];
+  }, 350);
+}
+
 function showGlobalOverlay(text, finalize) {
   const mode = currentConfig.overlayMode || "toast";
   const durationSeconds =
@@ -396,15 +562,10 @@ function showGlobalOverlay(text, finalize) {
       ? currentConfig.overlayDuration
       : 6;
   ensureOverlay();
+  stopOverlayLoadingAnimation();
   overlayEl.className = "ai-translate-overlay";
   overlayContentEl.textContent = text;
-
-  if (mode === "center") {
-    overlayEl.classList.add("centered");
-    if (!overlayActionsEl?.parentElement) {
-      overlayEl.appendChild(overlayActionsEl);
-    }
-  }
+  applyOverlayMode(mode);
   overlayEl.classList.add("visible");
   if (overlayTimer) {
     clearTimeout(overlayTimer);
@@ -426,10 +587,21 @@ if (isExtensionContextValid()) {
       if (message?.action === "streamUpdate") {
         const { requestId, target, text, done, error } = message;
         if (target === "overlay") {
+          if (requestId && text === "Translating..." && !done) {
+            startOverlayLoadingAnimation(requestId);
+            return;
+          }
+          if (requestId && overlayLoadingRequestId && requestId === overlayLoadingRequestId) {
+            stopOverlayLoadingAnimation();
+          }
           showGlobalOverlay(text, Boolean(done));
-          if (done && requestId && requestId === activeSelectionRequestId && selectionButton) {
-            selectionButton.classList.remove(TRANSLATE_LOADING_CLASS);
-            activeSelectionRequestId = null;
+          if (requestId && requestId === activeSelectionRequestId) {
+            if (done) {
+              clearSelectionStreamState();
+            } else {
+              const strings = getLocaleStrings(currentConfig.uiLang || currentConfig.targetLang);
+              armSelectionTimeout(requestId, strings);
+            }
           }
           return;
         }
@@ -437,6 +609,7 @@ if (isExtensionContextValid()) {
           const entry = inlineStreams.get(requestId);
           if (!entry) return;
           const { result, btn, strings } = entry;
+          armInlineStreamTimeout(requestId);
           result.textContent = text || "";
           result.style.display = "block";
           if (done) {
@@ -445,7 +618,7 @@ if (isExtensionContextValid()) {
             if (error) {
               result.textContent = `${strings.errorPrefix}: ${text}`;
             }
-            inlineStreams.delete(requestId);
+            clearInlineStreamState(requestId);
           }
         }
       }
