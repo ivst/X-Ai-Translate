@@ -798,7 +798,9 @@
     "errorPrefix": "Ошибка",
     "copy": "Копировать",
     "close": "Закрыть",
-    "selectionTitle": "Перевести выделение"
+    "selectionTitle": "Перевести выделение",
+    "extensionContextUnavailable": "Контекст расширения недоступен. Попробуйте снова или перезагрузите вкладку.",
+    "temporaryConnectionIssue": "Временная проблема соединения. Попробуйте снова или перезагрузите вкладку."
   },
   "uk": {
     "buttonIdle": "Перекласти текст",
@@ -806,7 +808,9 @@
     "errorPrefix": "Помилка",
     "copy": "Копіювати",
     "close": "Закрити",
-    "selectionTitle": "Перекласти виділення"
+    "selectionTitle": "Перекласти виділення",
+    "extensionContextUnavailable": "Контекст розширення недоступний. Спробуйте ще раз або перезавантажте вкладку.",
+    "temporaryConnectionIssue": "Тимчасова проблема зʼєднання. Спробуйте ще раз або перезавантажте вкладку."
   },
   "bg": {
     "buttonIdle": "Преведи текста",
@@ -814,7 +818,9 @@
     "errorPrefix": "Грешка",
     "copy": "Копирай",
     "close": "Затвори",
-    "selectionTitle": "Преведи избраното"
+    "selectionTitle": "Преведи избраното",
+    "extensionContextUnavailable": "Контекстът на разширението не е наличен. Опитайте отново или презаредете този раздел.",
+    "temporaryConnectionIssue": "Временен проблем с връзката. Опитайте отново или презаредете този раздел."
   },
   "sr": {
     "buttonIdle": "Преведи текст",
@@ -822,7 +828,9 @@
     "errorPrefix": "Грешка",
     "copy": "Копирај",
     "close": "Затвори",
-    "selectionTitle": "Преведи избор"
+    "selectionTitle": "Преведи избор",
+    "extensionContextUnavailable": "Контекст екстензије није доступан. Покушајте поново или поново учитајте ову картицу.",
+    "temporaryConnectionIssue": "Привремени проблем са везом. Покушајте поново или поново учитајте ову картицу."
   },
   "en": {
     "buttonIdle": "Translate text",
@@ -830,7 +838,9 @@
     "errorPrefix": "Error",
     "copy": "Copy",
     "close": "Close",
-    "selectionTitle": "Translate selection"
+    "selectionTitle": "Translate selection",
+    "extensionContextUnavailable": "Extension context unavailable. Try again or reload this tab.",
+    "temporaryConnectionIssue": "Temporary connection issue. Try again or reload this tab."
   },
   "de": {
     "buttonIdle": "Text übersetzen",
@@ -838,7 +848,9 @@
     "errorPrefix": "Fehler",
     "copy": "Kopieren",
     "close": "Schließen",
-    "selectionTitle": "Auswahl übersetzen"
+    "selectionTitle": "Auswahl übersetzen",
+    "extensionContextUnavailable": "Erweiterungskontext nicht verfügbar. Versuchen Sie es erneut oder laden Sie diesen Tab neu.",
+    "temporaryConnectionIssue": "Temporäres Verbindungsproblem. Versuchen Sie es erneut oder laden Sie diesen Tab neu."
   },
   "fr": {
     "buttonIdle": "Traduire le texte",
@@ -846,7 +858,9 @@
     "errorPrefix": "Erreur",
     "copy": "Copier",
     "close": "Fermer",
-    "selectionTitle": "Traduire la sélection"
+    "selectionTitle": "Traduire la sélection",
+    "extensionContextUnavailable": "Contexte de l'extension indisponible. Réessayez ou rechargez cet onglet.",
+    "temporaryConnectionIssue": "Problème de connexion temporaire. Réessayez ou rechargez cet onglet."
   },
   "es": {
     "buttonIdle": "Traducir texto",
@@ -854,7 +868,9 @@
     "errorPrefix": "Error",
     "copy": "Copiar",
     "close": "Cerrar",
-    "selectionTitle": "Traducir selección"
+    "selectionTitle": "Traducir selección",
+    "extensionContextUnavailable": "Contexto de la extensión no disponible. Inténtalo de nuevo o recarga esta pestaña.",
+    "temporaryConnectionIssue": "Problema de conexión temporal. Inténtalo de nuevo o recarga esta pestaña."
   },
   "pt": {
     "buttonIdle": "Traduzir texto",
@@ -862,7 +878,9 @@
     "errorPrefix": "Erro",
     "copy": "Copiar",
     "close": "Fechar",
-    "selectionTitle": "Traduzir seleção"
+    "selectionTitle": "Traduzir seleção",
+    "extensionContextUnavailable": "Contexto da extensão indisponível. Tente novamente ou recarregue esta aba.",
+    "temporaryConnectionIssue": "Problema temporário de conexão. Tente novamente ou recarregue esta aba."
   },
   "it": {
     "buttonIdle": "Traduci testo",
@@ -870,7 +888,9 @@
     "errorPrefix": "Errore",
     "copy": "Copia",
     "close": "Chiudi",
-    "selectionTitle": "Traduci selezione"
+    "selectionTitle": "Traduci selezione",
+    "extensionContextUnavailable": "Contesto dell'estensione non disponibile. Riprova o ricarica questa scheda.",
+    "temporaryConnectionIssue": "Problema di connessione temporaneo. Riprova o ricarica questa scheda."
   },
   "tr": {
     "buttonIdle": "Metni çevir",
@@ -878,7 +898,9 @@
     "errorPrefix": "Hata",
     "copy": "Kopyala",
     "close": "Kapat",
-    "selectionTitle": "Seçimi çevir"
+    "selectionTitle": "Seçimi çevir",
+    "extensionContextUnavailable": "Uzantı bağlamı kullanılamıyor. Tekrar deneyin veya bu sekmeyi yenileyin.",
+    "temporaryConnectionIssue": "Geçici bağlantı sorunu. Tekrar deneyin veya bu sekmeyi yenileyin."
   },
   "ar": {
     "buttonIdle": "ترجمة النص",
@@ -886,7 +908,9 @@
     "errorPrefix": "خطأ",
     "copy": "نسخ",
     "close": "إغلاق",
-    "selectionTitle": "ترجمة التحديد"
+    "selectionTitle": "ترجمة التحديد",
+    "extensionContextUnavailable": "سياق الإضافة غير متاح. حاول مرة أخرى أو أعد تحميل علامة التبويب هذه.",
+    "temporaryConnectionIssue": "مشكلة اتصال مؤقتة. حاول مرة أخرى أو أعد تحميل علامة التبويب هذه."
   },
   "he": {
     "buttonIdle": "תרגם טקסט",
@@ -894,7 +918,9 @@
     "errorPrefix": "שגיאה",
     "copy": "העתק",
     "close": "סגור",
-    "selectionTitle": "תרגם בחירה"
+    "selectionTitle": "תרגם בחירה",
+    "extensionContextUnavailable": "הקשר ההרחבה אינו זמין. נסה שוב או טען מחדש את הלשונית הזו.",
+    "temporaryConnectionIssue": "בעיית חיבור זמנית. נסה שוב או טען מחדש את הלשונית הזו."
   },
   "el": {
     "buttonIdle": "Μετάφραση κειμένου",
@@ -902,7 +928,9 @@
     "errorPrefix": "Σφάλμα",
     "copy": "Αντιγραφή",
     "close": "Κλείσιμο",
-    "selectionTitle": "Μετάφραση επιλογής"
+    "selectionTitle": "Μετάφραση επιλογής",
+    "extensionContextUnavailable": "Το περιβάλλον της επέκτασης δεν είναι διαθέσιμο. Δοκιμάστε ξανά ή ανανεώστε αυτήν την καρτέλα.",
+    "temporaryConnectionIssue": "Προσωρινό πρόβλημα σύνδεσης. Δοκιμάστε ξανά ή ανανεώστε αυτήν την καρτέλα."
   },
   "th": {
     "buttonIdle": "แปลข้อความ",
@@ -910,7 +938,9 @@
     "errorPrefix": "ข้อผิดพลาด",
     "copy": "คัดลอก",
     "close": "ปิด",
-    "selectionTitle": "แปลที่เลือก"
+    "selectionTitle": "แปลที่เลือก",
+    "extensionContextUnavailable": "บริบทของส่วนขยายไม่พร้อมใช้งาน ลองอีกครั้งหรือรีโหลดแท็บนี้",
+    "temporaryConnectionIssue": "มีปัญหาการเชื่อมต่อชั่วคราว ลองอีกครั้งหรือรีโหลดแท็บนี้"
   },
   "ko": {
     "buttonIdle": "텍스트 번역",
@@ -918,7 +948,9 @@
     "errorPrefix": "오류",
     "copy": "복사",
     "close": "닫기",
-    "selectionTitle": "선택 번역"
+    "selectionTitle": "선택 번역",
+    "extensionContextUnavailable": "확장 프로그램 컨텍스트를 사용할 수 없습니다. 다시 시도하거나 이 탭을 새로고침하세요.",
+    "temporaryConnectionIssue": "일시적인 연결 문제입니다. 다시 시도하거나 이 탭을 새로고침하세요."
   },
   "ja": {
     "buttonIdle": "テキストを翻訳",
@@ -926,7 +958,9 @@
     "errorPrefix": "エラー",
     "copy": "コピー",
     "close": "閉じる",
-    "selectionTitle": "選択を翻訳"
+    "selectionTitle": "選択を翻訳",
+    "extensionContextUnavailable": "拡張機能のコンテキストを利用できません。もう一度試すか、このタブを再読み込みしてください。",
+    "temporaryConnectionIssue": "一時的な接続問題です。もう一度試すか、このタブを再読み込みしてください。"
   },
   "zh": {
     "buttonIdle": "翻译文本",
@@ -934,7 +968,9 @@
     "errorPrefix": "错误",
     "copy": "复制",
     "close": "关闭",
-    "selectionTitle": "翻译所选"
+    "selectionTitle": "翻译所选",
+    "extensionContextUnavailable": "扩展上下文不可用。请重试或重新加载此标签页。",
+    "temporaryConnectionIssue": "临时连接问题。请重试或重新加载此标签页。"
   }
 };
 
@@ -980,7 +1016,11 @@
         errorPrefix: chosen.errorPrefix,
         copy: chosen.copy,
         close: chosen.close,
-        selectionTitle: chosen.selectionTitle
+        selectionTitle: chosen.selectionTitle,
+        extensionContextUnavailable:
+          chosen.extensionContextUnavailable || CONTENT_I18N.en.extensionContextUnavailable,
+        temporaryConnectionIssue:
+          chosen.temporaryConnectionIssue || CONTENT_I18N.en.temporaryConnectionIssue
       };
     }
   };

@@ -112,10 +112,10 @@ function formatActionableError(strings, err) {
     lowerMsg.includes("extension context unavailable") ||
     lowerMsg.includes("extension context invalidated")
   ) {
-    return `${strings.errorPrefix}: extension context unavailable. Try again or reload this tab.`;
+    return `${strings.errorPrefix}: ${strings.extensionContextUnavailable || msg}`;
   }
   if (isRecoverableRuntimeMessage(msg)) {
-    return `${strings.errorPrefix}: temporary connection issue. Try again or reload this tab.`;
+    return `${strings.errorPrefix}: ${strings.temporaryConnectionIssue || msg}`;
   }
   return `${strings.errorPrefix}: ${msg}`;
 }

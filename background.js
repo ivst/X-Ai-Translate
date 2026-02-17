@@ -166,8 +166,9 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status !== "complete" || !changeInfo.url) return;
-  ensureTabReady(tabId, changeInfo.url || tab?.url);
+  if (changeInfo.status !== "complete") return;
+  const url = changeInfo.url || tab?.url;
+  ensureTabReady(tabId, url);
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
