@@ -540,6 +540,10 @@ function stopOverlayLoadingAnimation() {
 
 function startOverlayLoadingAnimation(requestId) {
   stopOverlayLoadingAnimation();
+  if (overlayTimer) {
+    clearTimeout(overlayTimer);
+    overlayTimer = null;
+  }
   overlayLoadingRequestId = requestId || null;
   overlayLoadingFrame = 0;
   const frames = [".", "..", "...", ".."];

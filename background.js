@@ -32,8 +32,6 @@ function notify(title, message) {
   });
 }
 
-const injectionAttempts = new Set();
-
 function ensureContentScript(tabId) {
   return new Promise((resolve) => {
     if (!tabId) {
@@ -70,18 +68,17 @@ async function sendToTab(tabId, payload) {
         resolve(true);
         return;
       }
-      if (injectionAttempts.has(tabId)) {
-        resolve(false);
-        return;
-      }
-      injectionAttempts.add(tabId);
       const injected = await ensureContentScript(tabId);
       if (!injected) {
         resolve(false);
         return;
       }
       chrome.tabs.sendMessage(tabId, payload, () => {
-        resolve(!chrome.runtime.lastError);
+        if (!chrome.runtime.lastError) {
+          resolve(true);
+          return;
+        }
+        resolve(false);
       });
     });
   });

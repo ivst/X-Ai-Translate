@@ -233,6 +233,7 @@ function getStorageAreaSafe(area) {
 }
 
 function applyTranslations(lang) {
+  document.documentElement.lang = lang || "en";
   const strings = getLocaleStrings(lang);
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
