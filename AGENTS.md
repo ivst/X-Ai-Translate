@@ -6,3 +6,5 @@
   - summary of changes,
   - affected files/components,
   - notable decisions or caveats.
+- PR body must be valid Markdown with real line breaks.
+- Do not use escaped newline sequences (`\n`) or unnecessary escaping in PR text.
