@@ -23,7 +23,9 @@ const DEFAULT_CONFIG = {
   uiLang: "en",
   overlayMode: "center",
   overlayDuration: 6,
-  selectionShortcut: false
+  selectionShortcut: false,
+  enableXInlineTranslation: true,
+  enableYoutubeInlineTranslation: true
 };
 const SCRIPT_DOMINANCE_THRESHOLD = 0.7;
 const CONTENT_STRINGS_FALLBACK = {
@@ -434,6 +436,24 @@ function getInlineContainer(el) {
   return el.parentElement;
 }
 
+function isXInlineTarget(el) {
+  return Boolean(el.closest(TWEET_TEXT_SELECTOR));
+}
+
+function isYoutubeInlineTarget(el) {
+  return Boolean(el.closest("ytd-comment-thread-renderer, ytd-comment-view-model, ytd-comment-renderer"));
+}
+
+function isInlineTranslationEnabledForElement(el) {
+  if (isXInlineTarget(el) && currentConfig.enableXInlineTranslation === false) {
+    return false;
+  }
+  if (isYoutubeInlineTarget(el) && currentConfig.enableYoutubeInlineTranslation === false) {
+    return false;
+  }
+  return true;
+}
+
 function enhanceInlineText(el) {
   const container = getInlineContainer(el);
   if (!container) {
@@ -441,7 +461,9 @@ function enhanceInlineText(el) {
   }
 
   const text = el.textContent?.trim() || "";
-  const showButton = shouldShowButton(text, currentConfig.targetLang);
+  const showButton =
+    isInlineTranslationEnabledForElement(el) &&
+    shouldShowButton(text, currentConfig.targetLang);
 
   const existing = container.querySelectorAll("[data-ai-translate]");
   if (!showButton) {

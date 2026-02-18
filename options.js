@@ -10,6 +10,8 @@
   overlayMode: "center",
   overlayDuration: 6,
   selectionShortcut: false,
+  enableXInlineTranslation: true,
+  enableYoutubeInlineTranslation: true,
   syncApiKeys: false,
   openrouterFreeOnly: true,
   openrouterSource: "user",
@@ -72,6 +74,8 @@ const sourceLangSelect = document.getElementById("sourceLang");
 const overlayModeSelect = document.getElementById("overlayMode");
 const overlayDurationInput = document.getElementById("overlayDuration");
 const selectionShortcutCheckbox = document.getElementById("selectionShortcut");
+const enableXInlineTranslationCheckbox = document.getElementById("enableXInlineTranslation");
+const enableYoutubeInlineTranslationCheckbox = document.getElementById("enableYoutubeInlineTranslation");
 const statusEl = document.getElementById("status");
 const openrouterControls = document.getElementById("openrouterControls");
 const openrouterFreeOnlyCheckbox = document.getElementById("openrouterFreeOnly");
@@ -911,6 +915,14 @@ chrome.storage.sync.get(defaultConfig, (data) => {
     typeof data.selectionShortcut === "boolean"
       ? data.selectionShortcut
       : defaultConfig.selectionShortcut;
+  enableXInlineTranslationCheckbox.checked =
+    typeof data.enableXInlineTranslation === "boolean"
+      ? data.enableXInlineTranslation
+      : defaultConfig.enableXInlineTranslation;
+  enableYoutubeInlineTranslationCheckbox.checked =
+    typeof data.enableYoutubeInlineTranslation === "boolean"
+      ? data.enableYoutubeInlineTranslation
+      : defaultConfig.enableYoutubeInlineTranslation;
   openrouterFreeOnlyCheckbox.checked =
     typeof data.openrouterFreeOnly === "boolean"
       ? data.openrouterFreeOnly
@@ -1243,6 +1255,8 @@ document.getElementById("save").addEventListener("click", () => {
     overlayMode: overlayModeSelect.value,
     overlayDuration: Number(overlayDurationInput.value) || defaultConfig.overlayDuration,
     selectionShortcut: selectionShortcutCheckbox.checked,
+    enableXInlineTranslation: enableXInlineTranslationCheckbox.checked,
+    enableYoutubeInlineTranslation: enableYoutubeInlineTranslationCheckbox.checked,
     syncApiKeys,
     openrouterFreeOnly: openrouterFreeOnlyCheckbox.checked,
     openrouterSource: openrouterSourceSelect.value,
