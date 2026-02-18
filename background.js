@@ -8,6 +8,8 @@ const DEFAULT_CONFIG = {
   sourceLang: "auto",
   syncApiKeys: false,
   overlayMode: "center",
+  enableXInlineTranslation: true,
+  enableYoutubeInlineTranslation: true,
   yandexFolderId: ""
 };
 
